@@ -76,7 +76,7 @@ void jDE::showCR(){
     std::cout << i << ": " << *it << std::endl;
 }
 
-void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen){
+void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, Benchmarks * f){
   assert( ndim > 0 );
   assert( (ndim * ps) == genes.size() );
   assert( ps == size );
@@ -89,7 +89,7 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen){
 
   uint i = 0, j = 0;
   for( ; i < ps; i++ ){
-    
+
     /* Get three mutually different indexs */
     do n1 = random_i(rng); while (n1 == i);
     do n2 = random_i(rng); while (n2 == i || n2 == n1 );
@@ -103,7 +103,11 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen){
       if( random(rng) <= myCR or ( j == ndim-1 ) ){
         n_gen[i * ndim + j] = genes[n1 * ndim + j] + myF * (genes[n2 * ndim + j] - genes[n3 * ndim + j] );
 
-        /* Check the Bounds */
+        if( n_gen[i * ndim + j] > f->getMaxX() )
+          n_gen[i * ndim + j] = f->getMaxX();
+
+        if( n_gen[i * ndim + j] < f->getMinX() )
+          n_gen[i * ndim + j] = f->getMinX();
 
       } else
         n_gen[i * ndim + j] = genes[i * ndim + j];

@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <cassert>
 
+#include "Benchmarks.h"
+
 typedef std::vector<double> vDouble;
 
 class jDE {
@@ -55,8 +57,9 @@ public:
    *    - uint: pop size
    *    - vector<double> containing the genes(ps x ndim)
    *    - vector<double> to put the new generation
+   *    - Benchmarks to check bounds
    */
-  void runDE(uint, uint, const vDouble &, vDouble &);
+  void runDE(uint, uint, const vDouble &, vDouble &, Benchmarks *);
 
 };
 
