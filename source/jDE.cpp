@@ -53,7 +53,7 @@ void jDE::update(){
     r2 = random(rng);
     r3 = random(rng);
     r4 = random(rng);
-    printf("r1 %.2lf r2 %.2lf r3 %.2lf r4 %.2lf\n", r1, r2, r3, r4);
+    //printf("r1 %.2lf r2 %.2lf r3 %.2lf r4 %.2lf\n", r1, r2, r3, r4);
     if( r2 < T )
       F[i] = f_lower + (r1 * f_upper);
 
@@ -74,4 +74,39 @@ void jDE::showCR(){
   uint i = 0;
   for( auto it = CR.begin(); it != CR.end(); it++, i++ )
     std::cout << i << ": " << *it << std::endl;
+}
+
+void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen){
+  assert( ndim > 0 );
+  assert( (ndim * ps) == genes.size() );
+  assert( ps == size );
+
+  std::uniform_real_distribution<double> random(0.00, 1.00);
+  std::uniform_int_distribution<int> random_i(0, ps-1);
+
+  int n1, n2, n3;
+  double myCR, myF;
+
+  uint i = 0, j = 0;
+  for( ; i < ps; i++ ){
+    
+    /* Get three mutually different indexs */
+    do n1 = random_i(rng); while (n1 == i);
+    do n2 = random_i(rng); while (n2 == i || n2 == n1 );
+    do n3 = random_i(rng); while (n3 == i || n3 == n1 || n3 == n2);
+    //printf("%d %d %d\n", n1, n2, n3);
+
+    myCR = CR[i];
+    myF  = F[i];
+
+    for( j = 0; j < ndim; j++ ){
+      if( random(rng) <= myCR or ( j == ndim-1 ) ){
+        n_gen[i * ndim + j] = genes[n1 * ndim + j] + myF * (genes[n2 * ndim + j] - genes[n3 * ndim + j] );
+
+        /* Check the Bounds */
+
+      } else
+        n_gen[i * ndim + j] = genes[i * ndim + j];
+    }
+  }
 }

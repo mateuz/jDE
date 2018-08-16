@@ -5,7 +5,7 @@ SRCS = $(wildcard $(SRC_PATH)/*.cpp)
 
 OBJS = $(patsubst %.cpp, $(OBJ_PATH)/%.o, $(notdir $(SRCS)))
 
-CC = g++ -std=c++17 -O3
+CC = g++ -std=c++17 -O3 -g
 
 all: jDE-demo
 
