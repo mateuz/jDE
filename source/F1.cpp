@@ -67,7 +67,6 @@ double F1::compute(vector<double> x, uint init){
     Ovector = createShiftVector(dimension,minX,maxX);
   }
 
-  printf("> %d and init in %d\n", dimension, init);
 	for(i = 0; i < dimension; i++) {
     anotherz[i] = x[init + i] - Ovector[i];
   }

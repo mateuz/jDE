@@ -11,40 +11,53 @@
 #include "jDE.h"
 
 int main(int argc, char * argv[]){
-  uint size = 20;
+  uint NP = 20;
   uint ndim = 10;
   uint funID = 1;
-
-  jDE * j = new jDE(size);
-  j->update();
-
-  //j->showF();
-  //j->showCR();
-
-  //j->update();
-
-  //j->showF();
-  //j->showCR();
-
-  vDouble gen( size * ndim, +100.0);
-  vDouble n_gen( size * ndim, 0.0);
-
-  vDouble fitness(size);
-  vDouble n_fitness(size);
+  uint nEvals = 10000;
 
   Benchmarks * b = generateFuncObj( funID );
   b->setDimension(ndim);
 
-  j->runDE(ndim, size, gen, n_gen, b);
+  vDouble gen( NP * ndim);
+  vDouble n_gen( NP * ndim);
+  vDouble fitness(NP, 0.0);
+  vDouble n_fitness(NP, 0.0);
 
-  for( uint i = 0; i < size; i++ ){
+  std::mt19937 rng;
+  rng.seed(std::random_device{}());
+  std::uniform_real_distribution<double> random(b->getMinX(), b->getMaxX());
+
+  //randomly init genes
+  for( auto it = gen.begin(); it != gen.end(); it++ )
+    *it = random(rng);
+
+
+  jDE * jde = new jDE(NP);
+
+  //evaluate the first offspring
+  for( uint i = 0; i < NP; i++ )
     fitness[i] = b->compute(gen, i * ndim);
-    printf("%.2lf\n", fitness[i]);
-  }
 
-  for( uint i = 0; i < size; i++ ){
-    n_fitness[i] = b->compute(n_gen, i * ndim);
-    printf("%.2lf\n", fitness[i]);
+
+  double a = 9999999999.0;
+  uint pb = 0;
+  for( uint run = 0; run < nEvals; run += NP){
+    jde->runDE(ndim, NP, gen, n_gen, b);
+
+    for( uint i = 0; i < NP; i++ )
+        n_fitness[i] = b->compute(n_gen, i * ndim);
+
+    jde->selection(ndim, NP, gen, n_gen, fitness, n_fitness);
+    jde->update();
+
+    for( uint i = 0; i < NP; i++ ){
+      if( fitness[i] < a){
+        pb = i;
+        a = fitness[i];
+      }
+    }
+    printf("%-3i | %-5.20E\n", run/NP, fitness[pb]);
   }
   return 0;
 }

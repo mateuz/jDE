@@ -37,7 +37,7 @@ void jDE::setFUpper( const double FU ){
 }
 
 void jDE::setT( const double _T){
-  T = _T;
+   T = _T;
 }
 
 void jDE::update(){
@@ -111,6 +111,29 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, Benchm
 
       } else
         n_gen[i * ndim + j] = genes[i * ndim + j];
+    }
+  }
+}
+
+void jDE::selection(
+  uint ndim, uint ps,
+  vDouble & genes, const vDouble & n_gen,
+  vDouble& fitness, const vDouble & n_fitness
+){
+  assert( ndim > 0 );
+  assert( ps > 0 );
+  assert( genes.size() == n_gen.size() );
+  assert( fitness.size() == n_fitness.size() );
+  assert( genes.size() == (ndim * ps) );
+  assert( fitness.size() ==  ps );
+
+  for( uint i = 0; i < ps; i++ ){
+
+    if( n_fitness[i] < fitness[i] ){
+      for( uint j = 0; j < ndim; j++ )
+        genes[i * ndim + j] = n_gen[ i * ndim + j];
+
+      fitness[i] = n_fitness[i];
     }
   }
 }

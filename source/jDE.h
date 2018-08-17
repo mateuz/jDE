@@ -61,6 +61,18 @@ public:
    */
   void runDE(uint, uint, const vDouble &, vDouble &, Benchmarks *);
 
+  /*
+   * Performs selection on the new offsprings
+   * @params:
+   *    - uint: num of dimensions
+   *    - uint: pop size
+   *    - vector<double> containing the genes(ps x ndim)
+   *    - vector<double> containing the new genes(ps x ndim)
+   *    - vector<double> containing the fitness of previous generation
+   *    - vector<double> containing the fitness of new generation
+   */
+  void selection(uint, uint, vDouble &, const vDouble &, vDouble& fitness, const vDouble & );
+
 };
 
 #endif
