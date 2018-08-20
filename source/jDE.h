@@ -11,8 +11,6 @@
 #include <algorithm>
 #include <cassert>
 
-#include "Benchmarks.h"
-
 typedef std::vector<double> vDouble;
 
 class jDE {
@@ -59,7 +57,7 @@ public:
    *    - vector<double> to put the new generation
    *    - Benchmarks to check bounds
    */
-  void runDE(uint, uint, const vDouble &, vDouble &, Benchmarks *);
+  void runDE(uint, uint, const vDouble &, vDouble &, const double, const double);
 
   /*
    * Performs selection on the new offsprings

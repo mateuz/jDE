@@ -5,7 +5,7 @@ jDE::jDE( uint _s ):
 {
   rng.seed(std::random_device{}());
   F.assign(size, 0.5);
-  CR.assign(size, 0.9);
+  CR.assign(size, 0.3);
 
   f_lower = 0.1;
   f_upper = 0.9;
@@ -37,7 +37,7 @@ void jDE::setFUpper( const double FU ){
 }
 
 void jDE::setT( const double _T){
-   T = _T;
+  T = _T;
 }
 
 void jDE::update(){
@@ -76,7 +76,7 @@ void jDE::showCR(){
     std::cout << i << ": " << *it << std::endl;
 }
 
-void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, Benchmarks * f){
+void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, const double x_min, const double x_max){
   assert( ndim > 0 );
   assert( (ndim * ps) == genes.size() );
   assert( ps == size );
@@ -103,11 +103,11 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, Benchm
       if( random(rng) <= myCR or ( j == ndim-1 ) ){
         n_gen[i * ndim + j] = genes[n1 * ndim + j] + myF * (genes[n2 * ndim + j] - genes[n3 * ndim + j] );
 
-        if( n_gen[i * ndim + j] > f->getMaxX() )
-          n_gen[i * ndim + j] = f->getMaxX();
+        if( n_gen[i * ndim + j] > x_max )
+          n_gen[i * ndim + j] = x_max;
 
-        if( n_gen[i * ndim + j] < f->getMinX() )
-          n_gen[i * ndim + j] = f->getMinX();
+        if( n_gen[i * ndim + j] < x_min )
+          n_gen[i * ndim + j] = x_min;
 
       } else
         n_gen[i * ndim + j] = genes[i * ndim + j];
