@@ -32,11 +32,15 @@ F2::~F2(){
 }
 
 double F2::compute(const vDouble gen, const uint ip){
-  double s = 0.0, a, b;
+  double s = 0.0, a, b, t;
   for( uint it = 0; it < (n_dim - 1); it++ ){
     a = gen[ip + it] - shift[it] + 1.00;
     b = gen[ip + it + 1] - shift[it + 1] + 1.00;
-    s += 100.0*pow(pow(a, 2.0)-b,2.0)+pow(a-1.0,2.0);
+
+    t = (b - (a * a));
+    s += (100.0 * t * t);
+    t = (a - 1.0);
+    s += (t * t);
   }
   return s;
 }

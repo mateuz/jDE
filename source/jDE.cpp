@@ -5,7 +5,7 @@ jDE::jDE( uint _s ):
 {
   rng.seed(std::random_device{}());
   F.assign(size, 0.5);
-  CR.assign(size, 0.9);
+  CR.assign(size, 0.3);
 
   f_lower = 0.1;
   f_upper = 0.9;
