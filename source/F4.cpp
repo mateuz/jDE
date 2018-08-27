@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <cmath>
 
 F4::F4(uint _dim):Benchmarks()
 {

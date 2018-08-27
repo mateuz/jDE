@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <cmath>
 
 F3::F3(uint _dim):Benchmarks()
 {
