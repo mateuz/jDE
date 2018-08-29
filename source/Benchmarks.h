@@ -18,6 +18,7 @@ protected:
   uint ID;
 
   vDouble shift;
+  vDouble M;
 
 public:
 

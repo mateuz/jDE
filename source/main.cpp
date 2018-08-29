@@ -16,6 +16,7 @@
 #include "F2.h"
 #include "F3.h"
 #include "F4.h"
+#include "F5.h"
 
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
@@ -52,6 +53,8 @@ std::string toString(uint id){
       return "Shifted Griewank";
     case 4:
       return "Shifted Rastringin";
+    case 5:
+      return "Shifted and Rotated Rosenbrock";
     default:
       return "Unknown";
   }
@@ -77,6 +80,11 @@ Benchmarks * getFunction(uint id, uint n_dim){
 
   if( id == 4 ){
     n = new F4(n_dim);
+    return n;
+  }
+
+  if( id == 5 ){
+    n = new F5(n_dim);
     return n;
   }
 
@@ -130,13 +138,13 @@ int main(int argc, char * argv[]){
   vDouble n_gen(NP * n_dim);
   vDouble fitness(NP, 0.0);
   vDouble n_fitness(NP, 0.0);
+  std::mt19937 rng;
+  rng.seed(std::random_device{}());
 
   double tini, tend;
   for( int go = 1; go <= n_runs; go++ ){
     tini = stime();
 
-    std::mt19937 rng;
-    rng.seed(std::random_device{}());
     std::uniform_real_distribution<double> random(B->getMin(), B->getMax());
 
     //randomly init genes
@@ -151,7 +159,7 @@ int main(int argc, char * argv[]){
 
     //start the evolutive process;
     for( uint run = 0; run < n_evals; run += NP){
-      jde->runDE(n_dim, NP, gen, n_gen, B->getMin(), B->getMax());
+      jde->runDE(n_dim, NP, gen, n_gen, fitness, B->getMin(), B->getMax());
 
       for( uint i = 0; i < NP; i++ )
         n_fitness[i] = B->compute(n_gen, i * n_dim);
