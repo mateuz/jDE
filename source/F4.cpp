@@ -36,7 +36,7 @@ double F4::compute(const vDouble gen, const uint ip){
   double s = 0.0, z;
   for( uint it = 0; it < n_dim; it++ ){
     z = gen[ip + it] - shift[it];
-    s += pow(z, 2.00) - 10.0 * cos( 2.0 * PI * z) + 10.0;
+    s += (z * z) - 10.0 * cos( 2.0 * PI * z) + 10.0;
   }
   return s;
 }

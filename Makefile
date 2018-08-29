@@ -7,16 +7,18 @@ OBJS = $(patsubst %.cpp, $(OBJ_PATH)/%.o, $(notdir $(SRCS)))
 
 CC = g++ -std=c++17 -O3 -g
 
-all: jDE-demo
+BOOST_FLAG = -lboost_program_options
 
-jDE-demo: $(OBJS)
-	$(CC) $^ -o $@
+all: demo
+
+demo: $(OBJS)
+	$(CC) $^ $(BOOST_FLAG) -o $@
 
 $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 	$(CC) -o $@ -c $<
 
 clean:
-	-rm -f $(OBJ_PATH)/*.o jDE-demo
+	-rm -f $(OBJ_PATH)/*.o demo
 
 run:
-	./jDE-demo
+	./demo
