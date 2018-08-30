@@ -148,8 +148,7 @@ int main(int argc, char * argv[]){
 	double tini, tend;
   for( int go = 1; go <= n_runs; go++ ){
     tini = stime();
-
-    
+   
 
     //randomly init genes
     for( auto it = gen.begin(); it != gen.end(); it++ )
