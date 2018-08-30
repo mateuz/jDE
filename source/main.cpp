@@ -138,14 +138,18 @@ int main(int argc, char * argv[]){
   vDouble n_gen(NP * n_dim);
   vDouble fitness(NP, 0.0);
   vDouble n_fitness(NP, 0.0);
+
   std::mt19937 rng;
   rng.seed(std::random_device{}());
+	std::uniform_real_distribution<double> random(B->getMin(), B->getMax());
 
-  double tini, tend;
+	std::vector< std::pair<double, double> > stats;
+  
+	double tini, tend;
   for( int go = 1; go <= n_runs; go++ ){
     tini = stime();
 
-    std::uniform_real_distribution<double> random(B->getMin(), B->getMax());
+    
 
     //randomly init genes
     for( auto it = gen.begin(); it != gen.end(); it++ )
@@ -159,7 +163,7 @@ int main(int argc, char * argv[]){
 
     //start the evolutive process;
     for( uint run = 0; run < n_evals; run += NP){
-      jde->runDE(n_dim, NP, gen, n_gen, fitness, B->getMin(), B->getMax());
+      jde->runDE(n_dim, NP, gen, n_gen, B->getMin(), B->getMax());
 
       for( uint i = 0; i < NP; i++ )
         n_fitness[i] = B->compute(n_gen, i * n_dim);
@@ -183,6 +187,35 @@ int main(int argc, char * argv[]){
     tend = stime();
     delete jde;
     printf(" | Execution: %-2d Overall Best: %+.8lf Time(ms): %.8f\n", go, fitness[pb], tend-tini);
+		stats.push_back(std::make_pair(fitness[pb], tend-tini));
   }
+	/* Statistics of the Runs */
+	double FO_mean  = 0.0f, FO_std  = 0.0f;
+	double T_mean   = 0.0f, T_std   = 0.0f;
+	for( auto it = stats.begin(); it != stats.end(); it++){
+		FO_mean += it->first;
+		T_mean  += it->second;
+	}
+	FO_mean /= n_runs;
+	T_mean  /= n_runs;
+	for( auto it = stats.begin(); it != stats.end(); it++){
+		FO_std += (( it->first - FO_mean )*( it->first  - FO_mean ));
+		T_std  += (( it->second - T_mean )*( it->second - T_mean  ));
+	}
+	FO_std /= n_runs;
+	FO_std = sqrt(FO_std);
+	T_std /= n_runs;
+	T_std = sqrt(T_std);
+	printf(" +==============================================================+ \n");
+	printf(" |                     EXPERIMENTS RESULTS                      | \n");
+	printf(" +==============================================================+ \n");
+	printf(" | Objective Function:\n");
+	printf(" | \t mean:         %+.20E\n", FO_mean);
+	printf(" | \t std:          %+.20E\n", FO_std);
+	printf(" | Execution Time (ms): \n");
+	printf(" | \t mean:         %+.3lf\n", T_mean);
+	printf(" | \t std:          %+.3lf\n", T_std);
+	printf(" +==============================================================+ \n");
+
   return 0;
 }
