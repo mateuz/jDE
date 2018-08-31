@@ -33,20 +33,16 @@ F5::F5(uint _dim):Benchmarks()
   /* Load a rotate matrix                           */
   check(n_dim);
   file_name = "data-files/rot/M_D" + std::to_string(n_dim) + ".txt";
+  vec_name = "M_D" + std::to_string(n_dim);
 
   file.open(file_name, std::ifstream::in);
   if( not file.is_open() ){
-    std::cout << "Error opening file\n";
+    std::cout << "Error opening rotation matrix file\n";
     exit(-1);
   }
 
-  M.resize(10 * n_dim * n_dim);
-
-  for( uint i = 0; i < (10 * n_dim * n_dim); i++ )
-    file >> M[i];
+  M = io->load_vector<double>( vec_name, file ) ;
   file.close();
-  /* ---------------------------------------------- */
-
 }
 
 F5::~F5(){
@@ -54,15 +50,8 @@ F5::~F5(){
 }
 
 void F5::check(uint nx){
-  if(not(
-    nx == 2  or nx == 5  or
-    nx == 10 or nx == 20 or
-    nx == 30 or nx == 40 or
-    nx == 50 or nx == 60 or
-    nx == 70 or nx == 80 or
-    nx == 90 or nx == 100
-  )){
-    printf("\nError: Rotation matrix are only defined for D = 2,5,10,20,30,40,50,60,70,80,90,100.\n");
+  if(!(nx==2 or nx==5 or nx==10 or nx==20 or nx==30 or nx==50 or nx==100)){
+    printf("\nError: Rotation matrix are only defined for D = 2,5,10,20,30,50,100.\n");
     exit(-1);
   }
 }
