@@ -5,7 +5,17 @@
 #include <iostream>
 #include <cmath>
 
-/*Future implementation of Rotated Rosenbrock*/
+/*
+ * Shifted and Rotated Rosenbrock's Function
+ *
+ * as defined in "Problem Definitions and Evaluation Criteria for the
+ * CEC 2013 Special Session and Competition on Real-Parameter Optimization",
+ * by Liang, J.J., Qu, B.-Y., Suganthan, P.N., Hernandez-Diaz, A.G.,
+ * Computational Intelligence Laboratory, Zhengzhou University, Zhengzhou,
+ * China and Nanyang Technological University, Singapore, Technical Report,
+ * v. 2012, p. 3-18, 2013.
+*/
+
 
 F5::F5(uint _dim):Benchmarks()
 {
@@ -50,13 +60,13 @@ F5::~F5(){
 }
 
 double F5::compute(const vDouble gen, const uint ip){
-  double c = 2.048/100.0;
+  //double c = 2.048/100.0;
   uint i, j;
   std::vector<double> z(n_dim);
 
   //shift and multiply by 2.048/100.0
   for( i = 0; i < n_dim; i++ )
-    z[i] = (gen[ip + i] - shift[i]) * c;
+    z[i] = (gen[ip + i] - shift[i]);// * c;
 
   //rotate function
   std::vector<double> z_rot(n_dim);
@@ -72,7 +82,7 @@ double F5::compute(const vDouble gen, const uint ip){
   //calc fitness
   double s1 = 0.0, t1, t2;
   for( uint i = 0; i < (n_dim - 1); i++ ){
-    t1 = z_rot[i] * z_rot[i] - z_rot[i + 1];
+    t1 = (z_rot[i] * z_rot[i]) - z_rot[i + 1];
     t2 = z_rot[i] - 1.0;
     s1 += 100.0 * (t1 * t1) + (t2 * t2);
   }
