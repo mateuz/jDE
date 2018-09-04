@@ -109,6 +109,8 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, const 
         if( n_gen[i * ndim + j] < x_min )
           n_gen[i * ndim + j] = x_min;
 
+        //n_gen[i * ndim + j] = bound_handle(n_gen[i * ndim + j], genes[i * ndim + j], x_min, x_max);
+
       } else
         n_gen[i * ndim + j] = genes[i * ndim + j];
     }
@@ -136,4 +138,20 @@ void jDE::selection(
       fitness[i] = n_fitness[i];
     }
   }
+}
+
+double jDE::bound_handle(
+  double t,
+  const double p,
+  const double min,
+  const double max
+){
+
+  if( t < min ){
+    t = (min + p) / 2.0;
+  } else if( t > max ){
+    t = (max + p) / 2.0;
+  }
+
+  return t;
 }

@@ -71,6 +71,20 @@ public:
    */
   void selection(uint, uint, vDouble &, const vDouble &, vDouble& fitness, const vDouble & );
 
+  /*
+   * This article propose a simple method to constrained handle:
+   *
+   * J. Zhang and A. C. Sanderson, "JADE: Adaptive differential evolution
+   * with optional external archive," IEEE Tran. Evol. Comput., vol. 13,
+   * no. 5, pp. 945–958, 2009.
+   *
+   * @params:
+   *    - double: c[i] trial vector ith dimensions to check bounds
+   *    - cdouble: parent[i], ith dimension of the parent
+   *    - cdouble: x_min, lower bound
+   *    - cdouble: x_max, upper bound
+   */
+  double bound_handle(double, const double, const double, const double);
 };
 
 #endif
