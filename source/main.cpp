@@ -18,6 +18,7 @@
 #include "F4.h"
 #include "F5.h"
 #include "F6.h"
+#include "F7.h"
 
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
@@ -58,6 +59,8 @@ std::string toString(uint id){
       return "Shifted and Rotated Rosenbrock";
     case 6:
       return "Shifted and Rotated Griewank";
+    case 7:
+      return "Shifted and Rotated Rastrigin";
     default:
       return "Unknown";
   }
@@ -93,6 +96,11 @@ Benchmarks * getFunction(uint id, uint n_dim){
 
   if( id == 6 ){
     n = new F6(n_dim);
+    return n;
+  }
+
+  if( id == 7 ){
+    n = new F7(n_dim);
     return n;
   }
 

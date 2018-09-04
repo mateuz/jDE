@@ -51,7 +51,19 @@ F7::F7(uint _dim):Benchmarks()
     exit(-1);
   }
 
-  M = io->load_vector<double>( vec_name, file ) ;
+  M = io->load_vector<double>( vec_name, file );
+  file.close();
+
+  /* ---------------------------------------------- */
+  file_name = "data-files/rot/M2_D" + std::to_string(n_dim) + ".txt";
+  vec_name = "M2_D" + std::to_string(n_dim);
+
+  file.open(file_name, std::ifstream::in);
+  if( not file.is_open() ){
+    std::cout << "Error opening rotation matrix [2] file\n";
+    exit(-1);
+  }
+  M2 = io->load_vector<double>( vec_name, file );
   file.close();
 }
 
@@ -68,7 +80,7 @@ double F7::compute(const vDouble gen, const uint ip){
 
   std::vector<double> z(n_dim);
   for(uint i = 0; i < n_dim; i++ )
-    z[i] = (gen[ip + i] - shift[i]) * c;
+    z[i] = (gen[ip + i] - shift[i]);// * c;
 
   //first rotation
   std::vector<double> z_rot(n_dim);
@@ -80,15 +92,15 @@ double F7::compute(const vDouble gen, const uint ip){
   }
 
   //osz
-  double xx;
+  double xx, c1, c2;
   int sx;
   std::vector<double> xosz(n_dim);
   for( uint i = 0; i < n_dim; i++ ){
-    if( i == 0 || i == (n_dim - 1) ){
-      if( x[i] != 0 )
-        xx = log(fabs( z[i] ));
+    if( i == 0 || i == d ){
+      if( z_rot[i] != 0 )
+        xx = log(fabs( z_rot[i] ));
 
-      if( x[i] > 0 ){
+      if( z_rot[i] > 0 ){
         c1 = 10;
         c2 = 7.9;
       } else {
@@ -96,35 +108,48 @@ double F7::compute(const vDouble gen, const uint ip){
         c2 = 3.1;
       }
 
-      if( x[i] > 0 )
+      if( z_rot[i] > 0 )
         sx = 1;
-      else if( x[i] == 0 )
+      else if( z_rot[i] == 0 )
         sx = 0;
       else
         sx = -1;
 
       xosz[i] = sx * exp(xx + 0.049 * (sin(c1 * xx) + sin(c2 * xx)));
     } else {
-      xosz[i] = x[i];
+      xosz[i] = z_rot[i];
     }
   }
 
   //asy
   std::vector<double> xasy(n_dim);
   for( uint i = 0; i < n_dim; i++ ){
-    if( x[i] > 0 )
-      xasy[i] = pow(x[i], 1.0 + beta * i / d * pow(x[i], 0.5));
+    if( xosz[i] > 0 )
+      xasy[i] = pow(xosz[i], 1.0 + beta * i / d * pow(xosz[i], 0.5));
   }
 
   //second rotation
+  for(uint i = 0; i < n_dim; i++ ){
+    z_rot[i] = 0.0;
+
+    for( uint j = 0; j < n_dim; j++ )
+      z_rot[i] += xasy[j] * M2[i * n_dim + j];
+  }
 
   //alpha
   for( uint i = 0; i < n_dim; i++ ){
-    z[i] *= pow(alpha, (1.0 * i) / (d * 2.0));
+    z[i] = z_rot[i] * pow(alpha, (1.0 * i) / d / 2.0);
   }
 
   //third rotation
+  for(uint i = 0; i < n_dim; i++ ){
+    z_rot[i] = 0.0;
 
+    for( uint j = 0; j < n_dim; j++ )
+      z_rot[i] += z[j] * M[i * n_dim + j];
+  }
+
+  z = z_rot;
   //evaluation
   double s = 0.0;
   for( uint i = 0; i < n_dim; i++ )

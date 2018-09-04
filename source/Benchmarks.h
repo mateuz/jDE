@@ -19,6 +19,7 @@ protected:
 
   vDouble shift;
   vDouble M;
+  vDouble M2;
 
 public:
 
