@@ -60,31 +60,36 @@ F5::~F5(){
 }
 
 double F5::compute(const vDouble gen, const uint ip){
-  //double c = 2.048/100.0;
   uint i, j;
-  std::vector<double> z(n_dim);
+  //The constant c is needed because on rotate operation
+  //the value of a dimension can be higher than bounds;
+  const double c = 2.048/100;
 
-  //shift and multiply by 2.048/100.0
+  //shift
+  std::vector<double> z(n_dim);
   for( i = 0; i < n_dim; i++ )
-    z[i] = (gen[ip + i] - shift[i]);// * c;
+    z[i] = (gen[ip + i] - shift[i]) * c;
 
   //rotate function
-  std::vector<double> z_rot(n_dim);
+  std::vector<double> z_rot(n_dim, 0);
   for( i = 0; i < n_dim; i++ ){
-    z_rot[i] = 0.0;
-
     for( j = 0; j < n_dim; j++ )
-			z_rot[i] += z[j] * M[i * n_dim + j];
+		  z_rot[i] += z[j] * M[i * n_dim + j];
 
     z_rot[i] += 1.0;
   }
 
+  z = z_rot;
   //calc fitness
-  double s1 = 0.0, t1, t2;
-  for( uint i = 0; i < (n_dim - 1); i++ ){
-    t1 = (z_rot[i] * z_rot[i]) - z_rot[i + 1];
-    t2 = z_rot[i] - 1.0;
-    s1 += 100.0 * (t1 * t1) + (t2 * t2);
+  double s = 0.0, t1, t2;
+  for( i = 0; i < (n_dim - 1); i++ ){
+    t1 = z[i+1] - (z[i] * z[i]);
+    t2 = z[i] - 1.0;
+
+    t1 *= t1;
+    t2 *= t2;
+
+    s += (100.0 * t1) + t2;
   }
-  return (s1);
+  return s;
 }

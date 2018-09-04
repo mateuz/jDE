@@ -10,6 +10,7 @@
 #include <random>
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 
 typedef std::vector<double> vDouble;
 
@@ -46,6 +47,11 @@ public:
 
   /* print all CR values */
   void showCR();
+
+  /*
+   * Reset to default F and CR
+   */
+  void reset();
 
   /*
    * Performs a iteration of DE/rand/1/bin using

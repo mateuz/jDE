@@ -68,18 +68,14 @@ double F6::compute(const vDouble gen, const uint ip){
     z[i] = (gen[ip + i] - shift[i]) * c;
 
   //rotate function
-  std::vector<double> z_rot(n_dim);
-  for(uint i = 0; i < n_dim; i++ ){
-    z_rot[i] = 0.0;
-
+  std::vector<double> z_rot(n_dim, 0);
+  for(uint i = 0; i < n_dim; i++ )
     for( uint j = 0; j < n_dim; j++ )
       z_rot[i] += z[j] * M[i * n_dim + j];
 
-  }
-
   double s = 0.0, p = 1.0;
   for( uint i = 0; i < n_dim; i++ ){
-    z[i] = z_rot[i] * pow(100.0, ( (1.0 * i) / (d * 2.0) ) );
+    z[i] = z_rot[i] * pow(100.0, (( 1.0 * i ) / d / 2.0 ));
 
     s += z[i] * z[i];
     p *= cos(z[i] / sqrt(i + 1.0));

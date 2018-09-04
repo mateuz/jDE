@@ -1,6 +1,7 @@
 #ifndef _BENCHMARKS_H
 #define _BENCHMARKS_H
 
+#include <cstdio>
 #include <vector>
 #include <algorithm>
 

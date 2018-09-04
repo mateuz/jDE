@@ -3,7 +3,7 @@
 jDE::jDE( uint _s ):
   size(_s)
 {
-  rng.seed(std::random_device{}());
+  rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
   F.assign(size, 0.5);
   CR.assign(size, 0.9);
 
@@ -38,6 +38,11 @@ void jDE::setFUpper( const double FU ){
 
 void jDE::setT( const double _T){
   T = _T;
+}
+
+void jDE::reset( void ){
+  F.assign(size, 0.5);
+  CR.assign(size, 0.9);
 }
 
 void jDE::update(){
@@ -81,8 +86,9 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, const 
   assert( (ndim * ps) == genes.size() );
   assert( ps == size );
 
-  std::uniform_real_distribution<double> random(0.00, 1.00);
-  std::uniform_int_distribution<int> random_i(0, ps-1);
+  //printf("ps: %d, ndim: %d, x_min: %.2lf, x_max: %.2lf\n", ps, ndim, x_min, x_max);
+  std::uniform_real_distribution<double> random(0, 1); //[0, 1)
+  std::uniform_int_distribution<int> random_i(0, ps-1); //[0, ps-1]
 
   int n1, n2, n3;
   double myCR, myF;
@@ -100,15 +106,12 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, const 
     myF  = F[i];
 
     for( j = 0; j < ndim; j++ ){
-      if( random(rng) <= myCR or ( j == ndim-1 ) ){
+      if( random(rng) <= myCR or ( j == (ndim-1) ) ){
         n_gen[i * ndim + j] = genes[n1 * ndim + j] + myF * (genes[n2 * ndim + j] - genes[n3 * ndim + j] );
 
-        if( n_gen[i * ndim + j] > x_max )
-          n_gen[i * ndim + j] = x_max;
-
-        if( n_gen[i * ndim + j] < x_min )
-          n_gen[i * ndim + j] = x_min;
-
+        //boundary constraint handling strategy :: Projection
+        n_gen[i * ndim + j] = std::min(x_max, n_gen[i * ndim + j]);
+        n_gen[i * ndim + j] = std::max(x_min, n_gen[i * ndim + j]);
         //n_gen[i * ndim + j] = bound_handle(n_gen[i * ndim + j], genes[i * ndim + j], x_min, x_max);
 
       } else
@@ -120,7 +123,7 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, const 
 void jDE::selection(
   uint ndim, uint ps,
   vDouble & genes, const vDouble & n_gen,
-  vDouble& fitness, const vDouble & n_fitness
+  vDouble & fitness, const vDouble & n_fitness
 ){
   assert( ndim > 0 );
   assert( ps > 0 );

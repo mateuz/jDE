@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include <cassert>
 #include <cmath>
+#include <chrono>
 
 #include "IO.h"
 #include "jDE.h"
@@ -149,27 +150,29 @@ int main(int argc, char * argv[]){
     return 0;
   }
 
-  //vDouble is a std::vector<double>
-  vDouble gen(NP * n_dim);
-  vDouble n_gen(NP * n_dim);
-  vDouble fitness(NP, 0.0);
-  vDouble n_fitness(NP, 0.0);
-
-  std::mt19937 rng;
-  rng.seed(std::random_device{}());
-	std::uniform_real_distribution<double> random(0.0, 1.0);
-
 	std::vector< std::pair<double, double> > stats;
 
-	double tini, tend;
+  auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+  std::mt19937 rng(seed);
+  std::uniform_real_distribution<double> random(0, 1);//[0, 1)
+
+  jDE * jde = new jDE(NP);
+
+  const double x_min = B->getMin();
+  const double x_max = B->getMax();
+
+  double tini, tend, best;
   for( int go = 1; go <= n_runs; go++ ){
+    //vDouble is a std::vector<double>
+    vDouble gen(NP * n_dim);
+    vDouble n_gen(NP * n_dim);
+    vDouble fitness(NP, 0.0);
+    vDouble n_fitness(NP, 0.0);
+
     tini = stime();
-
     //randomly init genes
-    for( auto it = gen.begin(); it != gen.end(); it++ )
-      *it = ((B->getMax() - B->getMin()) * random(rng)) + B->getMin();
-
-    jDE * jde = new jDE(NP);
+    for( uint i = 0; i < gen.size(); i++ )
+      gen[i] = (( x_max - x_min) * random(rng)) + x_min;
 
     //evaluate the initial population
     for( uint i = 0; i < NP; i++ )
@@ -178,30 +181,23 @@ int main(int argc, char * argv[]){
     //start the evolutive process;
     for( uint run = 0; run < n_evals; run += NP){
       jde->runDE(n_dim, NP, gen, n_gen, B->getMin(), B->getMax());
-
+      //evaluate
       for( uint i = 0; i < NP; i++ )
         n_fitness[i] = B->compute(n_gen, i * n_dim);
-
       //greedy selection
       jde->selection(n_dim, NP, gen, n_gen, fitness, n_fitness);
-
       //apply jDE method to update F and CR of each individual
       jde->update();
     }
-
     //search for the best individual
-    double a = fitness[0];
-    uint pb = 0;
-    for( uint i = 0; i < NP; i++ ){
-      if( fitness[i] < a){
-        pb = i;
-        a = fitness[i];
-      }
-    }
+    best = *std::min_element(fitness.begin(),fitness.end());
     tend = stime();
-    delete jde;
-    printf(" | Execution: %-2d Overall Best: %+.8lf Time(ms): %.8f\n", go, fitness[pb], tend-tini);
-		stats.push_back(std::make_pair(fitness[pb], tend-tini));
+
+    //reset F and CR for next run
+    jde->reset();
+
+    printf(" | Execution: %-2d Overall Best: %+.8lf Time(s): %.8f\n", go, best, tend-tini);
+		stats.push_back(std::make_pair(best, tend-tini));
   }
 	/* Statistics of the Runs */
 	double FO_mean  = 0.0f, FO_std  = 0.0f;
@@ -231,5 +227,6 @@ int main(int argc, char * argv[]){
 	printf(" | \t std:          %+.3lf\n", T_std);
 	printf(" +==============================================================+ \n");
 
+  //delete jde;
   return 0;
 }

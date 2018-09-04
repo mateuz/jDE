@@ -78,11 +78,11 @@ double F7::compute(const vDouble gen, const uint ip){
   const double alpha = 10.0;
 
   //shrink to the original search space (not needed here)
-  //const double c = 5.12/100.0;
+  const double c = 5.12/100.0;
 
   std::vector<double> z(n_dim);
   for(uint i = 0; i < n_dim; i++ )
-    z[i] = (gen[ip + i] - shift[i]);// * c;
+    z[i] = (gen[ip + i] - shift[i]) * c;
 
   //first rotation
   std::vector<double> z_rot(n_dim);
