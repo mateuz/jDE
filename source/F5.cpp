@@ -50,7 +50,7 @@ F5::~F5(){
 }
 
 double F5::compute(const vDouble gen, const uint ip){
-  double c = 2.048/100;
+  double c = 2.048/100.0;
   uint i, j;
   std::vector<double> z(n_dim);
 

@@ -149,7 +149,7 @@ int main(int argc, char * argv[]){
 
   std::mt19937 rng;
   rng.seed(std::random_device{}());
-	std::uniform_real_distribution<double> random(B->getMin(), B->getMax());
+	std::uniform_real_distribution<double> random(0.0, 1.0);
 
 	std::vector< std::pair<double, double> > stats;
 
@@ -157,10 +157,9 @@ int main(int argc, char * argv[]){
   for( int go = 1; go <= n_runs; go++ ){
     tini = stime();
 
-
     //randomly init genes
     for( auto it = gen.begin(); it != gen.end(); it++ )
-      *it = random(rng);
+      *it = ((B->getMax() - B->getMin()) * random(rng)) + B->getMin();
 
     jDE * jde = new jDE(NP);
 
