@@ -76,7 +76,9 @@ double F7::compute(const vDouble gen, const uint ip){
 
   const double beta = 0.2;
   const double alpha = 10.0;
-  const double c = 5.12/100.0;
+
+  //shrink to the original search space (not needed here)
+  //const double c = 5.12/100.0;
 
   std::vector<double> z(n_dim);
   for(uint i = 0; i < n_dim; i++ )
@@ -126,6 +128,8 @@ double F7::compute(const vDouble gen, const uint ip){
   for( uint i = 0; i < n_dim; i++ ){
     if( xosz[i] > 0 )
       xasy[i] = pow(xosz[i], 1.0 + beta * i / d * pow(xosz[i], 0.5));
+    else
+      xasy[i] = xosz[i];
   }
 
   //second rotation
