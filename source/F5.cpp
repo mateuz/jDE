@@ -49,13 +49,6 @@ F5::~F5(){
   /* empty */
 }
 
-void F5::check(uint nx){
-  if(!(nx==2 or nx==5 or nx==10 or nx==20 or nx==30 or nx==50 or nx==100)){
-    printf("\nError: Rotation matrix are only defined for D = 2,5,10,20,30,50,100.\n");
-    exit(-1);
-  }
-}
-
 double F5::compute(const vDouble gen, const uint ip){
   double c = 2.048/100;
   uint i, j;
@@ -71,7 +64,7 @@ double F5::compute(const vDouble gen, const uint ip){
     z_rot[i] = 0.0;
 
     for( j = 0; j < n_dim; j++ )
-			z_rot[i] = z_rot[i] + z[j] * M[i * n_dim + j];
+			z_rot[i] += z[j] * M[i * n_dim + j];
 
     z_rot[i] += 1.0;
   }

@@ -41,6 +41,8 @@ public:
   void setMax( const double );
   void setDim( const uint );
 
+  void check( const uint );
+
 };
 
 #endif

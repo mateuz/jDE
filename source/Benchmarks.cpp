@@ -34,3 +34,10 @@ void Benchmarks::setMax( const double _max ){
 void Benchmarks::setDim( const uint _dim ){
   n_dim = _dim;
 }
+
+void Benchmarks::check( const uint nx ){
+  if(!(nx==2 or nx==5 or nx==10 or nx==20 or nx==30 or nx==50 or nx==100)){
+    printf("\nError: Rotation matrix are only defined for D = 2,5,10,20,30,50,100.\n");
+    exit(-1);
+  }
+}

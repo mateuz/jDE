@@ -10,8 +10,6 @@ public:
   ~F5();
 
   double compute(const vDouble, const uint);
-
-  void check(uint);
 };
 
 #endif

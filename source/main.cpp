@@ -17,6 +17,7 @@
 #include "F3.h"
 #include "F4.h"
 #include "F5.h"
+#include "F6.h"
 
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
@@ -55,6 +56,8 @@ std::string toString(uint id){
       return "Shifted Rastringin";
     case 5:
       return "Shifted and Rotated Rosenbrock";
+    case 6:
+      return "Shifted and Rotated Griewank";
     default:
       return "Unknown";
   }
@@ -85,6 +88,11 @@ Benchmarks * getFunction(uint id, uint n_dim){
 
   if( id == 5 ){
     n = new F5(n_dim);
+    return n;
+  }
+
+  if( id == 6 ){
+    n = new F6(n_dim);
     return n;
   }
 
@@ -144,11 +152,11 @@ int main(int argc, char * argv[]){
 	std::uniform_real_distribution<double> random(B->getMin(), B->getMax());
 
 	std::vector< std::pair<double, double> > stats;
-  
+
 	double tini, tend;
   for( int go = 1; go <= n_runs; go++ ){
     tini = stime();
-   
+
 
     //randomly init genes
     for( auto it = gen.begin(); it != gen.end(); it++ )
