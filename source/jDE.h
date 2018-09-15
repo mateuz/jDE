@@ -24,6 +24,9 @@ private:
   vDouble F;
   vDouble CR;
 
+  vDouble T_F;
+  vDouble T_CR;
+
   uint size;
 
   std::mt19937 rng;

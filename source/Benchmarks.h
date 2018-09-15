@@ -35,6 +35,10 @@ public:
     /* emtpy */
   };
 
+  virtual double compute(const double *, const uint){
+    /* emtpy */
+  };
+
   double getMin();
   double getMax();
   uint getID();

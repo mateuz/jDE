@@ -57,11 +57,11 @@ std::string toString(uint id){
     case 4:
       return "Shifted Rastringin";
     case 5:
-      return "Shifted and Rotated Rosenbrock";
+      return "Rotated Rosenbrock";
     case 6:
-      return "Shifted and Rotated Griewank";
+      return "Rotated Griewank";
     case 7:
-      return "Shifted and Rotated Rastrigin";
+      return "Rotated Rastrigin";
     default:
       return "Unknown";
   }
@@ -110,7 +110,7 @@ Benchmarks * getFunction(uint id, uint n_dim){
 
 int main(int argc, char * argv[]){
   srand((unsigned)time(NULL));
-  uint n_runs, NP, n_evals, n_dim, f_id;
+  uint n_runs, NP, max_evals, n_dim, f_id;
 
   try{
     po::options_description config("Opções");
@@ -119,7 +119,7 @@ int main(int argc, char * argv[]){
     ("pop_size,p", po::value<uint>(&NP)->default_value(20)       , "Population Size"               )
     ("dim,d"     , po::value<uint>(&n_dim)->default_value(10)    , "Number of Dimensions"          )
     ("func_obj,o", po::value<uint>(&f_id)->default_value(1)      , "Function to Optimize"          )
-    ("max_eval,e", po::value<uint>(&n_evals)->default_value(10e5), "Number of Function Evaluations")
+    ("max_eval,e", po::value<uint>(&max_evals)->default_value(10e5), "Number of Function Evaluations")
     ("help,h", "Mostrar texto de Ajuda");
 
     po::options_description cmdline_options;
@@ -139,7 +139,7 @@ int main(int argc, char * argv[]){
 	printf(" +==============================================================+ \n");
 	printf(" |                      EXECUTION PARAMETERS                    | \n");
 	printf(" +==============================================================+ \n");
-	show_params(n_runs, NP, n_evals, n_dim, toString(f_id));
+	show_params(n_runs, NP, max_evals, n_dim, toString(f_id));
 	printf(" +==============================================================+ \n");
 
   Benchmarks * B = NULL;
@@ -156,44 +156,43 @@ int main(int argc, char * argv[]){
   std::mt19937 rng(seed);
   std::uniform_real_distribution<double> random(0, 1);//[0, 1)
 
-  jDE * jde = new jDE(NP);
-
   const double x_min = B->getMin();
   const double x_max = B->getMax();
 
+  jDE * jde = new jDE(NP);
+
   double tini, tend, best;
   for( int go = 1; go <= n_runs; go++ ){
-    //vDouble is a std::vector<double>
     vDouble gen(NP * n_dim);
     vDouble n_gen(NP * n_dim);
     vDouble fitness(NP, 0.0);
     vDouble n_fitness(NP, 0.0);
-
-    tini = stime();
     //randomly init genes
-    for( uint i = 0; i < gen.size(); i++ )
+    for( uint i = 0; i < gen.size(); i++)
       gen[i] = (( x_max - x_min) * random(rng)) + x_min;
 
     //evaluate the initial population
     for( uint i = 0; i < NP; i++ )
       fitness[i] = B->compute(gen, i * n_dim);
 
+    uint nfes = 0;
+    tini = stime();
     //start the evolutive process;
-    for( uint run = 0; run < n_evals; run += NP){
-      jde->runDE(n_dim, NP, gen, n_gen, B->getMin(), B->getMax());
-      //evaluate
-      for( uint i = 0; i < NP; i++ )
-        n_fitness[i] = B->compute(n_gen, i * n_dim);
-      //greedy selection
-      jde->selection(n_dim, NP, gen, n_gen, fitness, n_fitness);
-      //apply jDE method to update F and CR of each individual
+    while(nfes < max_evals){
       jde->update();
+      jde->runDE(n_dim, NP, gen, n_gen, x_min, x_max);
+
+      for( int i = 0; i < NP; i++ ){
+        n_fitness[i] = B->compute(n_gen, i * n_dim);
+        nfes++;
+        if( nfes >= max_evals ) break;
+      }
+
+      jde->selection(n_dim, NP, gen, n_gen, fitness, n_fitness);
     }
-    //search for the best individual
     best = *std::min_element(fitness.begin(),fitness.end());
     tend = stime();
 
-    //reset F and CR for next run
     jde->reset();
 
     printf(" | Execution: %-2d Overall Best: %+.8lf Time(s): %.8f\n", go, best, tend-tini);

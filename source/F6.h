@@ -10,6 +10,7 @@ public:
   ~F6();
 
   double compute(const vDouble, const uint);
+  double compute(const double *, const uint);
 };
 
 #endif
