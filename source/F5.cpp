@@ -28,7 +28,7 @@ F5::F5(uint _dim):Benchmarks()
   /* ---------------------------------------------- */
   /* Load a shift vector to test the bench function */
   std::string file_name = "data-files/shift_rosenbrock.mat";
-  std::string vec_name = "Shift - Rosenbrock [-100.0, +100.0]";
+  std::string vec_name = "Shift - Rosenbrock";
   IO * io = new IO();
   std::ifstream file(file_name);
   if( not file.is_open() ){

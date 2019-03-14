@@ -181,23 +181,21 @@ int main(int argc, char * argv[]){
     while(nfes < max_evals){
       jde->update();
       jde->runDE(n_dim, NP, gen, n_gen, x_min, x_max);
-
       for( int i = 0; i < NP; i++ ){
         n_fitness[i] = B->compute(n_gen, i * n_dim);
         nfes++;
         if( nfes >= max_evals ) break;
       }
-
       jde->selection(n_dim, NP, gen, n_gen, fitness, n_fitness);
     }
     best = *std::min_element(fitness.begin(),fitness.end());
     tend = stime();
 
     jde->reset();
-
     printf(" | Execution: %-2d Overall Best: %+.8lf Time(s): %.8f\n", go, best, tend-tini);
 		stats.push_back(std::make_pair(best, tend-tini));
   }
+
 	/* Statistics of the Runs */
 	double FO_mean  = 0.0f, FO_std  = 0.0f;
 	double T_mean   = 0.0f, T_std   = 0.0f;

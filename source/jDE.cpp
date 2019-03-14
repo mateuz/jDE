@@ -44,6 +44,8 @@ void jDE::setT( const double _T){
 }
 
 void jDE::reset( void ){
+  rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
   F.assign(size, 0.5);
   CR.assign(size, 0.9);
 
@@ -66,12 +68,12 @@ void jDE::update(){
     r3 = random(rng);
     r4 = random(rng);
     //printf("r1 %.2lf r2 %.2lf r3 %.2lf r4 %.2lf\n", r1, r2, r3, r4);
-    if( r2 < T )
+    if( r2 < 0.1 )
       T_F[i] = f_lower + (r1 * f_upper);
     else
       T_F[i] = F[i];
 
-    if( r4 < T )
+    if( r4 < 0.1 )
       T_CR[i] = r3;
     else
       T_CR[i] = CR[i];
@@ -98,15 +100,15 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, const 
   assert( ps == size );
 
   //printf("ps: %d, ndim: %d, x_min: %.2lf, x_max: %.2lf\n", ps, ndim, x_min, x_max);
-  std::uniform_real_distribution<double> random(0, 1); //[0, 1)
+  std::uniform_real_distribution<double> random(0, 1);  //[0, 1)
   std::uniform_int_distribution<int> random_i(0, ps-1); //[0, ps-1]
+  std::uniform_int_distribution<int> random_d(0, ndim); //[0, ndim-1]
 
-  int n1, n2, n3, k;
+  int n1, n2, n3, rnbr;
   double myCR, myF;
 
   uint i = 0, j = 0;
   for( ; i < ps; i++ ){
-
     /* Get three mutually different indexs */
     do n1 = random_i(rng); while (n1 == i);
     do n2 = random_i(rng); while (n2 == i || n2 == n1 );
@@ -117,8 +119,9 @@ void jDE::runDE(uint ndim, uint ps, const vDouble& genes, vDouble& n_gen, const 
     myCR = T_CR[i];
     myF  = T_F[i];
 
+    rnbr = random_d(rng);
     for( j = 0; j < ndim; j++ ){
-      if( (random(rng) <= myCR) || ( j == (ndim-1) ) ){
+      if( (random(rng) < myCR) || ( j == rnbr ) ){
         n_gen[i * ndim + j] = genes[n1 * ndim + j] + myF * ( genes[ n2 * ndim + j] - genes[n3 * ndim + j]);
 
         //boundary constraint handling strategy :: Projection

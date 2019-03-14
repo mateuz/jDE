@@ -10,6 +10,7 @@ public:
   ~F7();
 
   double compute(const vDouble, const uint);
+  double compute(const double * gen, const uint ip);
 };
 
 #endif

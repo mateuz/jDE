@@ -15,7 +15,7 @@ F1::F1(uint _dim):Benchmarks()
   /* ---------------------------------------------- */
   /* Load a shift vector to test the bench function */
   std::string file_name = "data-files/shift_sphere.mat";
-  std::string vec_name = "Shift - Sphere [-100.0, +100.0]";
+  std::string vec_name = "Shift - Sphere";
   IO * io = new IO();
   std::ifstream file(file_name);
   if( not file.is_open() ){

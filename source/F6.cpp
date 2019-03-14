@@ -28,7 +28,7 @@ F6::F6(uint _dim):Benchmarks()
   /* ---------------------------------------------- */
   /* Load a shift vector to test the bench function */
   std::string file_name = "data-files/shift_griewank.mat";
-  std::string vec_name = "Shift - Griewank [-600.0, +600.0]";
+  std::string vec_name = "Shift - Griewank";
   IO * io = new IO();
   std::ifstream file(file_name);
   if( not file.is_open() ){
